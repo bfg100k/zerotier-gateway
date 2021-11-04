@@ -1,6 +1,9 @@
-FROM alpine:3.13 as builder
+ARG ALPINE_IMAGE=alpine
+ARG ALPINE_VERSION=3.14
+ARG ZT_COMMIT=3c7bd65bc929a086f3fea04e7371c817bbf77a86
+ARG ZT_VERSION=1.8.1
 
-ARG ZT_COMMIT=e8f7d5ef9e7ba6be0b2163cfa31f8817ba5b18f4
+FROM ${ALPINE_IMAGE}:${ALPINE_VERSION} as builder
 
 RUN apk add --update alpine-sdk linux-headers \
   && git clone --quiet https://github.com/zerotier/ZeroTierOne.git /src \
@@ -8,18 +11,25 @@ RUN apk add --update alpine-sdk linux-headers \
   && cd /src \
   && make -f make-linux.mk
 
-FROM alpine:3.13
-LABEL version="1.6.5"
-LABEL description="ZeroTier One as Docker Image"
+FROM ${ALPINE_IMAGE}:${ALPINE_VERSION}
 
-RUN apk add --update --no-cache libc6-compat libstdc++ bash iptables
+ARG ZT_VERSION
 
-EXPOSE 9993/udp
+LABEL org.opencontainers.image.title="zerotier" \
+      org.opencontainers.image.version="${ZT_VERSION}" \
+      org.opencontainers.image.description="ZeroTier One as Docker Image" \
+      org.opencontainers.image.licenses="MIT" \
+      org.opencontainers.image.source="https://github.com/bfg100k/zerotier-gateway"
 
 COPY --from=builder /src/zerotier-one /usr/sbin/
-RUN mkdir -p /var/lib/zerotier-one \
+
+RUN apk add --no-cache --purge --clean-protected --update libc6-compat libstdc++ \
+  && mkdir -p /var/lib/zerotier-one \
   && ln -s /usr/sbin/zerotier-one /usr/sbin/zerotier-idtool \
-  && ln -s /usr/sbin/zerotier-one /usr/sbin/zerotier-cli
+  && ln -s /usr/sbin/zerotier-one /usr/sbin/zerotier-cli \
+  && rm -rf /var/cache/apk/*
+
+EXPOSE 9993/udp
 
 COPY main.sh /usr/sbin/main.sh
 RUN chmod 0755 /usr/sbin/main.sh
