@@ -1,4 +1,5 @@
 [![Docker Pulls](https://badgen.net/docker/pulls/bfg100k/zerotier-gateway)](https://hub.docker.com/r/bfg100k/zerotier-gateway)
+[![Multiarch build](https://github.com/bfg100k/zerotier-gateway/actions/workflows/multiarch.yml/badge.svg)](https://github.com/bfg100k/zerotier-gateway/actions/workflows/multiarch.yml)
 
 ## zerotier-gateway
 
