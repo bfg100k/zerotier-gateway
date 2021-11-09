@@ -11,7 +11,7 @@ on:
       - created
 
 env:
-  IMAGE_NAME: zerotier
+  IMAGE_NAME: zerotier-gateway
 
 jobs:
   build:
@@ -89,7 +89,7 @@ jobs:
       - name: Push unstable images
         if: ${{ github.event_name == 'push' }}
         run: |
-          buildah manifest push --all --format v2s2 --creds ${{ secrets.DOCKERHUB_NAME }}:${{ secrets.DOCKERHUB_TOKEN }} ${{ env.IMAGE_NAME }}:latest docker://docker.io/${{ secrets.DOCKERHUB_NAME }}/${{ env.IMAGE_NAME }}:main
+          buildah manifest push --all --format v2s2 --creds ${{ secrets.DOCKERHUB_NAME }}:${{ secrets.DOCKERHUB_TOKEN }} ${{ env.IMAGE_NAME }}:latest docker://docker.io/${{ secrets.DOCKERHUB_NAME }}/${{ env.IMAGE_NAME }}:master
           
       - name: Push stable images
         if: ${{ github.event_name == 'release' }}
