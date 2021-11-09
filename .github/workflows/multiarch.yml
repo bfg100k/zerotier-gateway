@@ -89,10 +89,13 @@ jobs:
       - name: Push unstable images
         if: ${{ github.event_name == 'push' }}
         run: |
-          buildah manifest push --all --format v2s2 --creds ${{ secrets.DOCKERHUB_NAME }}:${{ secrets.DOCKERHUB_TOKEN }} ${{ env.IMAGE_NAME }}:latest docker://docker.io/${{ secrets.DOCKERHUB_NAME }}/${{ env.IMAGE_NAME }}:master
+          buildah manifest push --all --format v2s2 --creds ${{ secrets.DOCKERHUB_NAME }}:${{ secrets.DOCKERHUB_TOKEN }} ${{ env.IMAGE_NAME }}:latest docker://docker.io/${{ $GITHUB_REPOSITORY }}:master
+          buildah manifest push --all --creds ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} ${{ env.IMAGE_NAME }}:latest docker://ghcr.io/${{ $GITHUB_REPOSITORY }}:master
           
       - name: Push stable images
         if: ${{ github.event_name == 'release' }}
         run: |
-          buildah manifest push --all --format v2s2 --creds ${{ secrets.DOCKERHUB_NAME }}:${{ secrets.DOCKERHUB_TOKEN }} ${{ env.IMAGE_NAME }}:latest docker://docker.io/${{ secrets.DOCKERHUB_NAME }}/${{ env.IMAGE_NAME }}:latest
-          buildah manifest push --all --format v2s2 --creds ${{ secrets.DOCKERHUB_NAME }}:${{ secrets.DOCKERHUB_TOKEN }} ${{ env.IMAGE_NAME }}:latest docker://docker.io/${{ secrets.DOCKERHUB_NAME }}/${{ env.IMAGE_NAME }}:${{ github.event.release.tag_name }}
+          buildah manifest push --all --format v2s2 --creds ${{ secrets.DOCKERHUB_NAME }}:${{ secrets.DOCKERHUB_TOKEN }} ${{ env.IMAGE_NAME }}:latest docker://docker.io/${{ $GITHUB_REPOSITORY }}:latest
+          buildah manifest push --all --format v2s2 --creds ${{ secrets.DOCKERHUB_NAME }}:${{ secrets.DOCKERHUB_TOKEN }} ${{ env.IMAGE_NAME }}:latest docker://docker.io/${{ $GITHUB_REPOSITORY }}:${{ github.event.release.tag_name }}
+          buildah manifest push --all --creds ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} ${{ env.IMAGE_NAME }}:latest docker://ghcr.io/${{ $GITHUB_REPOSITORY }}:latest
+          buildah manifest push --all --creds ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} ${{ env.IMAGE_NAME }}:latest docker://ghcr.io/${{ $GITHUB_REPOSITORY }}:${{ github.event.release.tag_name }}
